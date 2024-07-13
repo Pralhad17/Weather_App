@@ -5,82 +5,162 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/cerulean/bootstrap.min.css"
         integrity="sha512-dQLT/B7byn2LjN/DN4zeBKpwGV6qbidV0XiMRWQOL7TGrV7FkZFldkGG+DGMU+CQnMTcRZlUI7GMWt1j6akNew=="
         crossorigin="anonymous" />
-    <title>Weather App </title>
+    <title>Weather App</title>
+    <style>
+        .centered-form {
+            display: flex;
+            justify-content: center;
+        }
+
+        .card-custom-size {
+            width: 80%;
+        }
+
+        .alert {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            z-index: 1000;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+            /* Adjust font size */
+        }
+
+        /* Custom CSS for responsive adjustments */
+        @media (max-width: 768px) {
+            .input-group-text {
+                font-size: 0.9rem;
+                /* Adjust font size for smaller screens */
+            }
+        }
+    </style>
 </head>
 
 <body>
     <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
         <div class="container">
-            <a href="../" class="navbar-brand">Weather App <span style="color: rgb(39, 117, 161);">
-                </span> </a>
-
+            <a href="../" class="navbar-brand">Weather App <span style="color: rgb(39, 117, 161);"></span></a>
         </div>
     </div>
 
     <br /><br /> <br>
-    <div id="jumbotron" class="jumbotron" style="text-align: center; margin-top:-50px">
-        <h1 class="display-5">Weather Desktop App </h1>
 
-        <!DOCTYPE html>
-        <html lang="en">
-        {% load static %}
-
-        <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.5.3/cerulean/bootstrap.min.css"
-                integrity="sha512-dQLT/B7byn2LjN/DN4zeBKpwGV6qbidV0XiMRWQOL7TGrV7FkZFldkGG+DGMU+CQnMTcRZlUI7GMWt1j6akNew=="
-                crossorigin="anonymous" />
-            <title>Weather App </title>
-        </head>
-
-        <body>
-            <!-- <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
-                <div class="container">
-                    <a href="../" class="navbar-brand"> Weather App <span style="color: rgb(39, 117, 161);"> <strong>
-
-                        </span> </a>
+    <div class="centered-form">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <form method="post" class="col-md-12" id="weather-form">
+                {% csrf_token %}
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Name Of City </span>
+                    </div>
+                    <input type="text" class="form-control" name="city" id="city-input"
+                        placeholder="Choose Your City ..." value="{{ city|default_if_none:'' }}">
+                    <div class="input-group-btn">
+                        <button type="button" class="btn btn-primary" id="search-btn">Search</button>
+                        <button type="button" class="btn btn-secondary" id="reset-btn">Reset</button>
+                    </div>
                 </div>
-            </div> -->
-            <div id="jumbotron" class="jumbotron" style="text-align: center; margin-top:-50px">
 
-                <img src="{% static 'images/pngegg.png' %}" class="image" style="width:100px; margin-bottom:-50px; ">
+            </form>
+        </nav>
+    </div>
+
+    <br> <br>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert-message" style="display: none;">
+        <strong>Error fetching data:</strong> <span id="error-message"></span>
+    </div>
+
+    <div class="row justify-content-center" id="weather-info">
+        {% if country_code and coordinate and temp and pressure and humidity %}
+        <div class="col-md-6 d-flex justify-content-center">
+            <div class="card text-white bg-light mb-6 card-custom-size">
+                <div class="card-body">
+                    <h4><span class="badge badge-primary">Country Code :</span> <span id="country_code"></span></h4>
+                    <h4><span class="badge badge-primary">Coordinates [X,Y] :</span> <span id="coordinate"></span></h4>
+                    <h4><span class="badge badge-primary">Temperature in Celsius :</span> <span id="temp"></span></h4>
+                    <h4><span class="badge badge-primary">Pressure :</span> <span id="pressure"></span></h4>
+                    <h4><span class="badge badge-primary">Humidity :</span> <span id="humidity"></span></h4>
+                    <h4><span class="badge badge-primary">Forecast :</span> <span id="main"></span> <img src=""
+                            alt="Image" style="width:70px" id="icon"></h4>
+                    <h4><span class="badge badge-primary">Description :</span> <span id="description"></span></h4>
+                </div>
             </div>
+        </div>
+        {% endif %}
+    </div>
 
-            <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-                <form method="post" class="col-md">
-                    {% csrf_token %}
-                    <div class=" input-group">
+    <footer style="position: fixed; bottom: 10px; right: 10px; font-size: 0.8rem; color: #777;">
+        <strong> Created By P.R Gomsale </strong>
+    </footer>
 
-                        <input type="text" class="form-control" name="city" placeholder="Choose Your City ...">
-                        <div class="input-group-btn">
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </div>
-                    </div>
-                    <form>
-            </nav>
-            <br> <br>
-            <div class="row">
-                {% if country_code and coordinate and temp and pressure and humidity %}
-                <div class="col d-flex justify-content-center" ">
-      <div class=" card text-white bg-light mb-6">
-                    <div class=" card-body">
-                        <h4><span class="badge badge-primary">Country Code :</span> {{country_code}}</h4>
-                        <h4><span class="badge badge-primary">Coordinates [X,Y] :</span> {{coordinate}}</h4>
-                        <h4><span class="badge badge-primary">Temperature in Celsius :</span> {{temp}}</h4>
-                        <h4><span class="badge badge-primary">Pressure :</span> {{pressure}} </h4>
-                        <h4><span class="badge badge-primary">Humidity : </span> {{humidity}}</h4>
-                        <h4><span class="badge badge-primary">Forecast : </span> {{main}} <img
-                                src="http://openweathermap.org/img/w/{{icon}}.png" alt="Image" style="width:70px"></h4>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.performance && window.performance.navigation.type === window.performance.navigation.TYPE_RELOAD) {
+                document.getElementById('weather-info').style.display = 'none';
+            }
+        });
 
-                        <h4><span class="badge badge-primary">Description : </span> {{description}}</h4>
-                    </div>
-                    {% endif %}
-                </div>
-        </body>
+        document.getElementById('search-btn').addEventListener('click', function () {
+            const cityInput = document.getElementById('city-input').value.trim();
+            if (!cityInput) {
+                document.getElementById('alert-message').style.display = 'block';
+                document.getElementById('error-message').textContent = 'Enter the City/Village Name!!';
+                setTimeout(() => {
+                    document.getElementById('alert-message').style.display = 'none';
+                }, 3000);
+            } else {
+                fetchWeatherData(cityInput);
+            }
+        });
 
-        </html>
+        document.getElementById('reset-btn').addEventListener('click', function () {
+            document.getElementById('weather-form').reset();
+            document.getElementById('weather-info').style.display = 'none';
+        });
+
+        function fetchWeatherData(city) {
+            fetch('https://api.openweathermap.org/data/2.5/weather?q=' + city + '&units=metric&appid=4f1e0cf70b1773e34d30c5d1965fcc26')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error fetching data: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayWeatherData(data);
+                })
+                .catch(error => {
+                    document.getElementById('alert-message').style.display = 'block';
+                    document.getElementById('error-message').textContent = error.message;
+                    setTimeout(() => {
+                        document.getElementById('alert-message').style.display = 'none';
+                    }, 3000);
+                });
+        }
+
+        function displayWeatherData(data) {
+            const {
+                sys,
+                coord,
+                main,
+                weather
+            } = data;
+            document.getElementById('country_code').textContent = sys.country;
+            document.getElementById('coordinate').textContent = coord.lon + ', ' + coord.lat;
+            document.getElementById('temp').textContent = main.temp + ' °C';
+            document.getElementById('pressure').textContent = main.pressure;
+            document.getElementById('humidity').textContent = main.humidity;
+            document.getElementById('main').textContent = weather[0].main;
+            document.getElementById('description').textContent = weather[0].description;
+            document.getElementById('icon').src = 'http://openweathermap.org/img/w/' + weather[0].icon + '.png';
+
+            document.getElementById('weather-info').style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
