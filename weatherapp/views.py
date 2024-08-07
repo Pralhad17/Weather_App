@@ -4,6 +4,9 @@ import json
 from urllib.error import HTTPError
 
 def index(request):
+    data = {}  # Initialize data as an empty dictionary
+    error_message = ""  # Initialize error_message as an empty string
+
     if request.method == 'POST':
         city = request.POST.get('city', '')  # Get city from POST data
         if city:
@@ -25,20 +28,12 @@ def index(request):
                 }
             except HTTPError as e:
                 error_message = f"Error fetching data: {e}"
-                return render(request, "main/index.html", {"error_message": error_message})
             except KeyError:
                 error_message = f"Data for {city} not found. Please enter a valid city name."
-                return render(request, "main/index.html", {"error_message": error_message})
             except Exception as e:
                 error_message = f"Unexpected error: {e}"
-                return render(request, "main/index.html", {"error_message": error_message})
         else:
-            data = {}
             error_message = "Please enter a city name."
-            return render(request, "main/index.html", {"error_message": error_message})
 
-    else:
-        data = {}
-
-    return render(request, "main/index.html", data)
- 
+    # Pass both data and error_message to the template
+    return render(request, "main/index.html", {"data": data, "error_message": error_message})
